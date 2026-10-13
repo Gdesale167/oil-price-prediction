@@ -1,0 +1,17 @@
+services:
+  api:
+    build: .
+    ports: ["8000:8000"]
+    volumes: ["./data:/app/data", "./models:/app/models"]
+
+  dashboard:
+    build: .
+    command: streamlit run streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+    ports: ["8501:8501"]
+    volumes: ["./data:/app/data", "./models:/app/models"]
+
+  collector:   # real-time data collection, once an hour
+    build: .
+    command: python -m oilpred.collect --loop --interval 3600
+    volumes: ["./data:/app/data"]
+    restart: unless-stopped

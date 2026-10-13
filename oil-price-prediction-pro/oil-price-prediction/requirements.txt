@@ -1,0 +1,15 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+numpy
+pandas
+scikit-learn
+xgboost
+torch
+shap
+matplotlib
+plotly
+yfinance
+joblib
+streamlit>=1.50
+fastapi
+uvicorn[standard]
+pydantic>=2
