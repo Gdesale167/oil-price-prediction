@@ -6,6 +6,7 @@ venv/
 .ruff_cache/
 data/*
 !data/.gitkeep
+!data/seed/
 models/*
 !models/.gitkeep
 .streamlit/secrets.toml

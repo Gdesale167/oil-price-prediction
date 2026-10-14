@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from . import database
-from .config import DEFAULT_PERIOD, resolve_ticker
+from .config import DEFAULT_PERIOD, resolve_ticker, seed_dir
 
 log = logging.getLogger(__name__)
 
@@ -40,6 +40,20 @@ def collect(ticker: str = "WTI", period: str = DEFAULT_PERIOD) -> int:
     return new_rows
 
 
+def seed_path(symbol: str):
+    return seed_dir() / f"{symbol.replace('=', '_').replace('^', '')}.csv"
+
+
+def load_seed(symbol: str) -> pd.Series:
+    """Read the bundled CSV snapshot (columns: date, price), if there is one."""
+    path = seed_path(symbol)
+    if not path.exists():
+        return pd.Series(dtype=float, name="price")
+    df = pd.read_csv(path, parse_dates=["date"])
+    s = pd.Series(df["price"].values, index=pd.DatetimeIndex(df["date"]), name="price")
+    return s[s > 0].sort_index()
+
+
 def get_prices(ticker: str = "WTI", refresh: bool = True,
                period: str = DEFAULT_PERIOD) -> pd.Series:
     """Return stored prices, optionally refreshing from the web first."""
@@ -50,10 +64,16 @@ def get_prices(ticker: str = "WTI", refresh: bool = True,
         except Exception as exc:  # network down, rate limit, ...
             log.warning("Refresh failed for %s: %s. Using stored data.", symbol, exc)
     prices = database.load_prices(symbol)
+    if prices.empty:  # e.g. fresh cloud container and Yahoo Finance is blocking us
+        seed = load_seed(symbol)
+        if not seed.empty:
+            log.warning("Using bundled snapshot for %s", symbol)
+            database.save_prices(symbol, seed)
+            prices = database.load_prices(symbol)
     if prices.empty:
         raise DataUnavailable(
-            f"No stored data for {symbol} and live fetch failed. "
-            "Check your internet connection."
+            f"No data available for {symbol}: live fetch failed and no bundled "
+            "snapshot exists."
         )
     return prices
 

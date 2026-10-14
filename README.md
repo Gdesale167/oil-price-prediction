@@ -80,6 +80,12 @@ curl http://localhost:8000/runs
 - **Forecast bands** come from out-of-sample error and widen with the horizon.
 - Negative prices (WTI, April 2020) are dropped because log returns need prices > 0.
 
+## Data note
+Live prices come from Yahoo Finance. Some cloud hosts (including Streamlit Community
+Cloud) are rate-limited by Yahoo, so a CSV snapshot in `data/seed/` is used as a
+fallback and the dashboard shows the date of the data it is using. Locally and in
+Docker the collector refreshes prices normally.
+
 ## Limitations
 Prices depend on geopolitics, OPEC decisions and news that are not in this data.
 Multi-day recursive forecasts converge toward a flat line. This is an educational

@@ -52,6 +52,13 @@ except DataUnavailable as exc:
     st.error(str(exc))
     st.stop()
 
+age_days = (pd.Timestamp.now().normalize() - prices.index[-1]).days
+if age_days > 5:
+    st.info(
+        f"Showing stored data up to {prices.index[-1].date()}. Live refresh from "
+        "Yahoo Finance was unavailable, so this is the latest saved snapshot."
+    )
+
 if len(prices) < MIN_ROWS:
     st.warning(f"Only {len(prices)} rows stored; need {MIN_ROWS}. Click 'Collect latest data'.")
     st.stop()
