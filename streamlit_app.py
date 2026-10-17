@@ -145,6 +145,3 @@ with tab_db:
     st.dataframe(database.recent_runs(10), width="stretch")
     st.subheader("Stored prices")
     st.dataframe(prices.sort_index(ascending=False).to_frame(), width="stretch")
-
-st.warning("Educational project only. Not financial advice. Oil prices are driven by "
-           "geopolitics and supply decisions that this model cannot see.")
