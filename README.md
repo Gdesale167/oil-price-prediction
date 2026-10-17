@@ -1,3 +1,6 @@
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://oil-price-gunjan.streamlit.app)
+[![CI](https://github.com/Gdesale167/oil-price-prediction/actions/workflows/ci.yml/badge.svg)](https://github.com/Gdesale167/oil-price-prediction/actions)
+
 # 🛢️ Oil Price Prediction: end-to-end ML project
 
 Collects crude oil prices (WTI and Brent), trains three forecasting models, explains them
