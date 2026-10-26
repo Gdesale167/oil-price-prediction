@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from oilpred import database
-from oilpred.config import MIN_ROWS, TICKERS, resolve_ticker
+from oilpred.config import MIN_ROWS, resolve_ticker
 from oilpred.data import DataUnavailable, collect, get_prices
 from oilpred.explain import mean_abs_shap, shap_values
 from oilpred.models import available_models
@@ -29,8 +29,9 @@ st.caption("Time-series forecasting with Ridge, XGBoost and LSTM, explained with
 
 with st.sidebar:
     st.header("Settings")
-    name = st.selectbox("Commodity", list(TICKERS))
+    name = "Brent"
     symbol = resolve_ticker(name)
+    st.markdown("**Commodity:** Brent crude oil")
     model_name = st.selectbox("Model", available_models(), index=1)
     days = st.slider("Forecast horizon (business days)", 5, 60, 30)
     test_size = st.slider("Test set (%)", 10, 40, 20) / 100
