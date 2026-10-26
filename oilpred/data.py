@@ -64,11 +64,12 @@ def get_prices(ticker: str = "WTI", refresh: bool = True,
         except Exception as exc:  # network down, rate limit, ...
             log.warning("Refresh failed for %s: %s. Using stored data.", symbol, exc)
     prices = database.load_prices(symbol)
-    if prices.empty:  # e.g. fresh cloud container and Yahoo Finance is blocking us
-        seed = load_seed(symbol)
-        if not seed.empty:
-            log.warning("Using bundled snapshot for %s", symbol)
-            database.save_prices(symbol, seed)
+    seed = load_seed(symbol)  # bundled snapshot, refreshed daily by a GitHub workflow
+    if not seed.empty:
+        missing = seed[~seed.index.isin(prices.index)]
+        if not missing.empty:
+            log.info("Adding %d rows from the bundled snapshot for %s", len(missing), symbol)
+            database.save_prices(symbol, missing)
             prices = database.load_prices(symbol)
     if prices.empty:
         raise DataUnavailable(
