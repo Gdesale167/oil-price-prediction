@@ -94,5 +94,5 @@ Prices depend on geopolitics, OPEC decisions and news that are not in this data.
 Multi-day recursive forecasts converge toward a flat line. This is an educational
 project, not financial advice.
 
-## Deploy the dashboard (free)
+## Deploy the dashboard 
 Push to GitHub, then on share.streamlit.io choose `streamlit_app.py`.
