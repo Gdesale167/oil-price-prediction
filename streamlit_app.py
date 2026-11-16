@@ -21,7 +21,9 @@ def load_prices(ticker: str, refresh_key: int) -> pd.Series:
 @st.cache_resource(show_spinner=False)
 def fit(ticker: str, model_name: str, test_size: float, last_date: str):
     prices = load_prices(ticker, 0)
-    return train_model(prices, model_name, test_size)
+    result = train_model(prices, model_name, test_size)
+    database.log_run(ticker, model_name, result[1])  # shows up in the Database tab
+    return result
 
 
 st.title("🛢️ Oil Price Prediction")

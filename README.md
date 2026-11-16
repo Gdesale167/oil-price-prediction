@@ -3,7 +3,7 @@
 
 # 🛢️ Oil Price Prediction: end-to-end ML project
 
-Collects crude oil prices (WTI and Brent), trains three forecasting models, explains them
+Collects crude oil prices (WTI and Brent; the dashboard shows Brent), trains three forecasting models, explains them
 with SHAP and serves predictions through a REST API and a Streamlit dashboard.
 Containerised with Docker and tested with GitHub Actions CI.
 
@@ -16,11 +16,12 @@ Containerised with Docker and tested with GitHub Actions CI.
 | Explainable AI | SHAP (TreeExplainer): bar chart and beeswarm in the dashboard |
 | Database | SQLite: prices, prediction log and model run history |
 | Real-time collection | `python -m oilpred.collect --loop` (Yahoo Finance to SQLite) |
+| Daily data update | A scheduled GitHub Action fetches prices every weekday and commits the CSV snapshots |
 | API | FastAPI with validation and auto docs at `/docs` |
 | Dashboard | Streamlit: forecast, model comparison, SHAP, database view |
 | Docker | One image, `docker-compose` runs API, dashboard and collector |
 | CI/CD | GitHub Actions: ruff lint, pytest, Docker build |
-| Tests | 17 tests: leakage check, DB, all 3 models, SHAP, API |
+| Tests | 20 tests: leakage check, DB, all 3 models, SHAP, API, snapshot fallback |
 
 ## Project structure
 ```
@@ -73,7 +74,7 @@ curl -X POST http://localhost:8000/train -H "Content-Type: application/json" \
 curl http://localhost:8000/runs
 ```
 
-## Design decisions 
+## Design decisions (worth mentioning in interviews)
 - **Predict returns, not prices.** Tree models cannot extrapolate beyond the price range
   they saw in training; log returns are stationary, so this problem disappears.
 - **No leakage.** Features for day *t* use data up to *t-1* only; a unit test enforces it.
@@ -87,12 +88,13 @@ curl http://localhost:8000/runs
 Live prices come from Yahoo Finance. Some cloud hosts (including Streamlit Community
 Cloud) are rate-limited by Yahoo, so a CSV snapshot in `data/seed/` is used as a
 fallback and the dashboard shows the date of the data it is using. Locally and in
-Docker the collector refreshes prices normally.
+Docker the collector refreshes prices normally. A scheduled GitHub Action
+(`.github/workflows/update-data.yml`) refreshes the snapshots every weekday.
 
 ## Limitations
 Prices depend on geopolitics, OPEC decisions and news that are not in this data.
 Multi-day recursive forecasts converge toward a flat line. This is an educational
 project, not financial advice.
 
-## Deploy the dashboard 
+## Deploy the dashboard (free)
 Push to GitHub, then on share.streamlit.io choose `streamlit_app.py`.
