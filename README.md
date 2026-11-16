@@ -73,7 +73,7 @@ curl -X POST http://localhost:8000/train -H "Content-Type: application/json" \
 curl http://localhost:8000/runs
 ```
 
-## Design decisions (worth mentioning in interviews)
+## Design decisions 
 - **Predict returns, not prices.** Tree models cannot extrapolate beyond the price range
   they saw in training; log returns are stationary, so this problem disappears.
 - **No leakage.** Features for day *t* use data up to *t-1* only; a unit test enforces it.
